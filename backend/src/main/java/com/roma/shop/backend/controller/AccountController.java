@@ -21,9 +21,7 @@ public class AccountController {
     }
 
     @PostMapping("/api/account/login")
-    public int login(
-            @RequestBody Map<String, String> params
-    ){
+    public int login(@RequestBody Map<String, String> params){
       Member member = memberRepository.findByEmailAndPassword(params.get("email"), params.get("password"));
       if(member != null ){
           return member.getId();

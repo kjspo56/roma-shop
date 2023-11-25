@@ -1,6 +1,6 @@
 <template>
   <ShopHeader/>
-  <HomePage/>
+  <RouterView/>
   <ShopFooter/>
 </template>
 
@@ -8,14 +8,22 @@
 
 import ShopHeader from "@/components/ShopHeader.vue";
 import ShopFooter from "@/components/ShopFooter.vue";
-import HomePage from "@/pages/HomePage.vue";
+import store from "@/scripts/store";
+//import HomePage from "@/pages/HomePage.vue";
 
 export default {
   name: 'App',
   components: {
     ShopFooter,
     ShopHeader,
-    HomePage
+    //HomePage
+  },
+  setup(){
+    const id = sessionStorage.getItem("id");
+
+    if(id){
+      store.commit("setAccount", id);
+    }
   }
 }
 </script>
