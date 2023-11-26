@@ -9,6 +9,9 @@
 import ShopHeader from "@/components/ShopHeader.vue";
 import ShopFooter from "@/components/ShopFooter.vue";
 import store from "@/scripts/store";
+import axios from "axios";
+import {useRoute} from "vue-router";
+import {watch} from "vue";
 //import HomePage from "@/pages/HomePage.vue";
 
 export default {
@@ -19,11 +22,18 @@ export default {
     //HomePage
   },
   setup(){
-    const id = sessionStorage.getItem("id");
 
-    if(id){
-      store.commit("setAccount", id);
-    }
+    const check = () =>{
+      axios.get("/api/account/check").then(({data})=>{
+        console.log(data);
+          store.commit("setAccount", data || 0);
+      })
+    };
+
+    const route = useRoute();
+    watch(route, () => {
+      check();
+    })
   }
 }
 </script>

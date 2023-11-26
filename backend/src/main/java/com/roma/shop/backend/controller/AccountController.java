@@ -4,13 +4,12 @@ import com.roma.shop.backend.entity.Member;
 import com.roma.shop.backend.repository.MemberRepository;
 import com.roma.shop.backend.service.JwtService;
 import com.roma.shop.backend.service.JwtServiceImpl;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
@@ -21,8 +20,11 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class AccountController {
     private final MemberRepository memberRepository;
 
-    public AccountController(MemberRepository memberRepository) {
+    private final JwtService jwtService;
+
+    public AccountController(MemberRepository memberRepository, JwtService jwtService) {
         this.memberRepository = memberRepository;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/api/account/login")
@@ -42,5 +44,15 @@ public class AccountController {
 
       }
       throw new ResponseStatusException(NOT_FOUND);
+    }
+
+    @GetMapping("/api/account/check")
+    public ResponseEntity check(@CookieValue(value = "token", required = false) String token) {
+        Claims claims = jwtService.getClaims(token);
+        if (claims != null) {
+            int id = Integer.parseInt(claims.get("id").toString());
+            return new ResponseEntity<>(id, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 }

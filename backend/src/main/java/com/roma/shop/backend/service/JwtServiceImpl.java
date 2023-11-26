@@ -1,9 +1,6 @@
 package com.roma.shop.backend.service;
 
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.*;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -38,5 +35,21 @@ public class JwtServiceImpl implements JwtService {
                 .signWith(signKey, SignatureAlgorithm.HS256);
 
         return builder.compact();
+    }
+
+    @Override
+    public Claims getClaims(String token) {
+        if(token != null && !token.isEmpty()){
+            try{
+                byte[] secretByteKey = Base64.getDecoder().decode(secretKey.replace('-', '+').replace('_', '/'));
+                Key signKey = new SecretKeySpec(secretByteKey, SignatureAlgorithm.HS256.getJcaName());
+                return Jwts.parserBuilder().setSigningKey(signKey).build().parseClaimsJws(token).getBody();
+            } catch (ExpiredJwtException e){
+                //만료됨
+            } catch (JwtException e){
+                //jwt가 유효하지 않음
+            }
+        }
+        return null;
     }
 }
