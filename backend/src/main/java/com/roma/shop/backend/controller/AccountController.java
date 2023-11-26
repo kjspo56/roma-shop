@@ -2,7 +2,12 @@ package com.roma.shop.backend.controller;
 
 import com.roma.shop.backend.entity.Member;
 import com.roma.shop.backend.repository.MemberRepository;
+import com.roma.shop.backend.service.JwtService;
+import com.roma.shop.backend.service.JwtServiceImpl;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,10 +26,20 @@ public class AccountController {
     }
 
     @PostMapping("/api/account/login")
-    public int login(@RequestBody Map<String, String> params){
+    public ResponseEntity login(@RequestBody Map<String, String> params, HttpServletResponse res){
       Member member = memberRepository.findByEmailAndPassword(params.get("email"), params.get("password"));
       if(member != null ){
-          return member.getId();
+          JwtService jwtService = new JwtServiceImpl();
+          int id = member.getId();
+          String token = jwtService.getToken("id", id);
+          Cookie cookie = new Cookie("token", token);
+
+          cookie.setHttpOnly(true);
+          cookie.setPath("/");
+
+          res.addCookie(cookie);
+          return  new ResponseEntity<>(id, HttpStatus.OK);
+
       }
       throw new ResponseStatusException(NOT_FOUND);
     }
