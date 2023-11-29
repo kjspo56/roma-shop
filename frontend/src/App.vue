@@ -12,14 +12,12 @@ import store from "@/scripts/store";
 import axios from "axios";
 import {useRoute} from "vue-router";
 import {watch} from "vue";
-//import HomePage from "@/pages/HomePage.vue";
 
 export default {
   name: 'App',
   components: {
     ShopFooter,
     ShopHeader,
-    //HomePage
   },
   setup(){
 
