@@ -23,6 +23,6 @@ spring:
     password: 1234
     driver-class-name: org.mariadb.jdbc.Driver
   mvc:
-    hiddenmethod:
+    hidden-method:
       filter:
         enabled: true
